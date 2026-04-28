@@ -1,0 +1,37 @@
+{
+  "id": "slack-notification",
+  "name": "Slack Notifications",
+  "type": "observability",
+  "description": "Routes Alertmanager alerts to a Slack channel via an incoming webhook.",
+  "longDescription": "Registers a Slack incoming webhook URL with the platform so that Alertmanager (or any alerting plugin) can deliver alert notifications to your Slack workspace.\n\nNo container is deployed — the webhook URL is stored securely and injected into Alertmanager configuration at runtime.",
+  "tags": ["observability", "notifications", "slack", "alerting"],
+  "capabilities": ["monitoring.notification"],
+  "author": "Kleff",
+  "repo": "https://github.com/kleffio/plugins/notification-slack",
+  "image": "",
+  "version": "0.1.0",
+  "license": "MIT",
+  "verified": true,
+  "alertmanagerReceiver": {
+    "name": "slack",
+    "config": {
+      "slack_configs": [
+        {
+          "api_url": "${SLACK_WEBHOOK_URL}",
+          "send_resolved": true,
+          "title": "{{ .CommonAnnotations.summary }}",
+          "text": "{{ range .Alerts }}*{{ .Labels.alertname }}* ({{ .Labels.severity }}): {{ .Annotations.summary }}\n{{ end }}"
+        }
+      ]
+    }
+  },
+  "config": [
+    {
+      "key": "SLACK_WEBHOOK_URL",
+      "label": "Slack Incoming Webhook URL",
+      "description": "The Slack incoming webhook URL, e.g. https://hooks.slack.com/services/T.../B.../... — the channel is set when you create the webhook in Slack.",
+      "type": "secret",
+      "required": true
+    }
+  ]
+}
